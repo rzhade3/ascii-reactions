@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { ChangeEvent, useEffect } from 'react'
 import type { GetStaticProps, NextPage } from 'next'
 import Head from 'next/head'
 import styles from '../styles/Home.module.css'
@@ -10,6 +10,27 @@ type HomeProps = {
 }
 
 const Home: NextPage<HomeProps> = (props: HomeProps) => {
+  const [reactions, setReactions] = React.useState(["typescript sucks"]);
+
+  useEffect(() => {
+    const assets = document.getElementsByClassName("Asset");
+    var tempAssets: string[] = []
+    for (let i = 0; i < assets.length; i++) {
+      const assetId = assets[i].id;
+      tempAssets.push(assetId);
+    }
+    setReactions(tempAssets);
+  }, []);
+
+  function search(e: ChangeEvent<HTMLInputElement>) {
+    const searchTerm = e.target.value;
+    reactions.forEach(reaction => {
+      const match = reaction.toLowerCase().startsWith(searchTerm.toLowerCase());
+      // @ts-ignore: This element is guaranteed to exist, since we indexed it in the useEffect hook
+      document.getElementById(reaction).style.display = match ? "block" : "none";
+    });
+  }
+
   return (
     <div className={styles.container}>
       <Head>
@@ -23,17 +44,21 @@ const Home: NextPage<HomeProps> = (props: HomeProps) => {
           Find your reaction here!
         </h1>
 
-        {props.assets.map(asset => (
-          <div key={asset.name}>
-            <Asset name={asset.name} content={asset.content}/>
-          </div>
-        ))}
+        <p>For the best experience, please view this page in Firefox or Safari.</p> 
+
+        <input type="text" id="search" placeholder="Search for a reaction" onChange={search} />
+
+        <div className="reactions">
+          {props.assets.map(asset => (
+            <Asset key={asset.filename} filename={asset.filename} content={asset.content}/>
+          ))}
+        </div>
       </main>
     </div>
   )
 }
 
-export default Home
+export default Home;
 
 export const getStaticProps: GetStaticProps<HomeProps> = async () => {
   const assets = getAssets('../reactions');

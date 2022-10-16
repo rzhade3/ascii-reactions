@@ -4,6 +4,9 @@ const nextConfig = {
   swcMinify: true,
   basePath: '/ascii-reactions',
   assetPrefix: '/ascii-reactions/',
+  env: {
+    repoUrl: 'https://github.com/rzhade3/ascii-reactions',
+  }
 }
 
 module.exports = nextConfig
